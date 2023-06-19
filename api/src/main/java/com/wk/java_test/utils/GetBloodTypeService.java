@@ -8,10 +8,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 @Service
 public class GetBloodTypeService {
-    public BloodType getType(String bloodTypeString){
+    public String getType(String bloodTypeString){
         for (BloodType bloodType : BloodType.values()) {
             if (bloodType.getValue().equalsIgnoreCase(bloodTypeString)) {
-                return bloodType;
+                return bloodType.getValue();
             }
         }
         return null;

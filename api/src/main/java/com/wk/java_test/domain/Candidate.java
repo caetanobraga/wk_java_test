@@ -7,12 +7,16 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.UUID;
+
+import static jakarta.persistence.EnumType.STRING;
+
 @Entity
 @Data @Getter @Setter
 public class Candidate {
     @Id
     private UUID id;
     private String name;
+    @Column(unique = true)
     private String cpf;
     private String rg;
     private Date birthDate;
@@ -27,8 +31,7 @@ public class Candidate {
     private String cellPhone;
     private Double height;
     private Integer weight;
-    @Enumerated(EnumType.STRING)
-    private BloodType bloodType;
+    private String bloodType;
     public Candidate(){
         this.setId();
     }
