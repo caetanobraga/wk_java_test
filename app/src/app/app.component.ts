@@ -12,13 +12,13 @@ export class AppComponent {
   @ViewChild('fileInput') fileInput: any;
   @ViewChild('canvas1', { static: true }) element1: ElementRef;
   @ViewChild('canvas2', { static: true }) element2: ElementRef;
+  @ViewChild('canvas3', { static: true }) element3: ElementRef;
 
 
   constructor(private http: HttpClient) {
     this.element1 = new ElementRef(null);
     this.element2 = new ElementRef(null);
-
-    
+    this.element3 = new ElementRef(null);
   }
 
   inputFileChange(event: any) {
@@ -35,6 +35,7 @@ export class AppComponent {
           console.log('Arquivo enviado com sucesso', response);
           this.getCandidatesByState();
           this.getImcByAgeGroup();
+          this.getObesePercent();
         },
         error => {
           console.error('Erro ao enviar o arquivo', error);
@@ -49,6 +50,19 @@ export class AppComponent {
     this.http.get(apiUrl).subscribe({
       next: (response: any) => {
         this.processChartCandidatesByStateData(response);
+      },
+      error: error => {
+        console.error('Erro ao obter os dados da API', error);
+      }
+    });
+  }
+
+  getObesePercent(){
+    const apiUrl = 'http://localhost:8082/api/v1/obeses-percentage';
+
+    this.http.get(apiUrl).subscribe({
+      next: (response: any) => {
+        this.processChartObesePercent(response);
       },
       error: error => {
         console.error('Erro ao obter os dados da API', error);
@@ -107,6 +121,27 @@ export class AppComponent {
         datasets:[
           {
             label: "Imc médio por faixa etária",
+            data: values,
+          }
+        ]
+      },
+    });
+  }
+
+  processChartObesePercent(data: { sex: string, percent: number }[]){
+
+    const labels: string[] = data.map( item => item.sex);
+
+    const values: number[] = data.map(item => item.percent);
+
+    const chartType = "bar";
+    new Chart(this.element3.nativeElement, {
+      type: chartType,
+      data: {
+        labels: labels,
+        datasets:[
+          {
+            label: "Percentual de obesos entre generos",
             data: values,
           }
         ]
