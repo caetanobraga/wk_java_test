@@ -19,6 +19,25 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
     Long countObeseMen();
     @Query("SELECT COUNT(c) FROM Candidate c WHERE c.sex = 'Feminino' AND (c.weight / (c.height * c.height)) > 30")
     Long countObeseWomen();
+
+    @Query("SELECT c.bloodType, AVG(DATEDIFF(CURRENT_DATE(), c.birthDate) / 365) " +
+            "FROM Candidate c " +
+            "GROUP BY c.bloodType")
+    List<Object[]> getAverageAgeByBloodType();
+
+    @Query("SELECT c.bloodType, COUNT(c) " +
+            "FROM Candidate c " +
+            "WHERE c.age >= 16 AND c.age <= 69 AND c.weight > 50 " +
+            "AND ((c.bloodType = 'A+' AND (c.bloodTypeReceiver IN ('AB+', 'A+', 'A-', 'O+','O-')))" +
+            "OR (c.bloodType = 'A-' AND (c.bloodTypeReceiver IN ('A-', 'O-')))" +
+            "OR (c.bloodType = 'B+' AND (c.bloodTypeReceiver IN ('B+', 'AB+', 'B-', 'O+','O-')))" +
+            "OR (c.bloodType = 'B-' AND (c.bloodTypeReceiver IN ('B-', 'O-')))" +
+            "OR (c.bloodType = 'AB+' AND (c.bloodTypeReceiver IN ('AB+')))" +
+            "OR (c.bloodType = 'AB-' AND (c.bloodTypeReceiver IN ('AB+', 'AB-')))" +
+            "OR (c.bloodType = 'O+' AND (c.bloodTypeReceiver IN ('A+', 'B+', 'O+', 'AB+')))" +
+            "OR (c.bloodType = 'O-' AND (c.bloodTypeReceiver IN ('A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-'))))) " +
+            "GROUP BY c.bloodType")
+    List<Object[]> countDonorsByBloodType();
 }
 
 

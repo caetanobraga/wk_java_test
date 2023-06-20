@@ -4,9 +4,7 @@ import com.wk.java_test.ApiExceptionHandler.exceptions.InvalidFileException;
 import com.wk.java_test.domain.Candidate;
 import com.wk.java_test.mapper.CandidateMapper;
 import com.wk.java_test.repository.CandidateRepository;
-import com.wk.java_test.service.candidate.response.CandidatesByStateResponse;
-import com.wk.java_test.service.candidate.response.ImcMediaByAgeGroupResponse;
-import com.wk.java_test.service.candidate.response.ObesesPrecentageBySexResponse;
+import com.wk.java_test.service.candidate.response.*;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,5 +70,17 @@ public class CandidateService implements ICandidateService {
         percents.add(new ObesesPrecentageBySexResponse("women", Double.parseDouble(formattedPercentWomen)));
         percents.add(new ObesesPrecentageBySexResponse("men", Double.parseDouble(formattedPercentMen)));
         return percents;
+    }
+    public List<AverageAgeByBloodTypeResponse> getAverageAgeByBloodType() {
+        List<Object[]> results = candidateRepository.getAverageAgeByBloodType();
+        return results.stream()
+                .map(result -> new AverageAgeByBloodTypeResponse((String) result[0], (Double) result[1]))
+                .collect(Collectors.toList());
+    }
+    public List<DonorsByBloodTypeResponse> getDonorsByBloodType() {
+        List<Object[]> results = candidateRepository.countDonorsByBloodType();
+        return results.stream()
+                .map(result -> new DonorsByBloodTypeResponse((String) result[0], (Long) result[1]))
+                .collect(Collectors.toList());
     }
 }
