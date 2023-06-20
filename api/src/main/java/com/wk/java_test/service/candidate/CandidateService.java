@@ -67,8 +67,8 @@ public class CandidateService implements ICandidateService {
         String formattedPercentWomen = decimalFormat.format(percentWomen);
 
         List<ObesesPrecentageBySexResponse> percents = new ArrayList<>();
-        percents.add(new ObesesPrecentageBySexResponse("women", Double.parseDouble(formattedPercentWomen)));
-        percents.add(new ObesesPrecentageBySexResponse("men", Double.parseDouble(formattedPercentMen)));
+        percents.add(new ObesesPrecentageBySexResponse("Mulheres", Double.parseDouble(formattedPercentWomen)));
+        percents.add(new ObesesPrecentageBySexResponse("Homens", Double.parseDouble(formattedPercentMen)));
         return percents;
     }
     public List<AverageAgeByBloodTypeResponse> getAverageAgeByBloodType() {

@@ -1,0 +1,30 @@
+<mat-toolbar color="primary">
+  <span>WK Teste</span>
+  <span class="example-spacer"></span>
+  <input type="file" (change)="inputFileChange($event)" #fileInput/>
+</mat-toolbar>
+
+
+
+<mat-progress-spinner  mode="indeterminate" *ngIf="isLoading" class="spinner"></mat-progress-spinner>
+
+
+<div class="centered-container">
+  <div>
+    <canvas #canvas1></canvas>
+  </div>
+  <div>
+    <canvas #canvas2></canvas>
+  </div>
+  <div>
+    <canvas #canvas3></canvas>
+  </div>
+  <div>
+    <canvas #canvas4></canvas>
+  </div>
+  <div>
+    <canvas #canvas5></canvas>
+  </div>
+</div>
+
+
