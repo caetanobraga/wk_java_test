@@ -8,10 +8,10 @@ public class ImcMediaByAgeGroupResponse {
         this.ageGroup = ageGroup;
         this.imcMedia = imcMedia;
     }
-    public int getFaixaIdade() {
+    public int getAgeGroup() {
         return ageGroup;
     }
-    public double getImcMedio() {
+    public double getImcMedia() {
         return imcMedia;
     }
 }

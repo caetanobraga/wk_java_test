@@ -27,15 +27,19 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
 
     @Query("SELECT c.bloodType, COUNT(c) " +
             "FROM Candidate c " +
-            "WHERE c.age >= 16 AND c.age <= 69 AND c.weight > 50 " +
-            "AND ((c.bloodType = 'A+' AND (c.bloodTypeReceiver IN ('AB+', 'A+', 'A-', 'O+','O-')))" +
-            "OR (c.bloodType = 'A-' AND (c.bloodTypeReceiver IN ('A-', 'O-')))" +
-            "OR (c.bloodType = 'B+' AND (c.bloodTypeReceiver IN ('B+', 'AB+', 'B-', 'O+','O-')))" +
-            "OR (c.bloodType = 'B-' AND (c.bloodTypeReceiver IN ('B-', 'O-')))" +
-            "OR (c.bloodType = 'AB+' AND (c.bloodTypeReceiver IN ('AB+')))" +
-            "OR (c.bloodType = 'AB-' AND (c.bloodTypeReceiver IN ('AB+', 'AB-')))" +
-            "OR (c.bloodType = 'O+' AND (c.bloodTypeReceiver IN ('A+', 'B+', 'O+', 'AB+')))" +
-            "OR (c.bloodType = 'O-' AND (c.bloodTypeReceiver IN ('A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-'))))) " +
+            "WHERE EXTRACT(YEAR FROM c.birthDate) <= EXTRACT(YEAR FROM CURRENT_DATE) - 16 " +
+            "AND EXTRACT(YEAR FROM c.birthDate) >= EXTRACT(YEAR FROM CURRENT_DATE) - 69 " +
+            "AND c.weight > 50 " +
+            "AND (" +
+            "   (c.bloodType = 'A+' AND c.bloodType IN ('AB+', 'A+', 'A-', 'O+', 'O-')) " +
+            "   OR (c.bloodType = 'A-' AND c.bloodType IN ('A-', 'O-')) " +
+            "   OR (c.bloodType = 'B+' AND c.bloodType IN ('B+', 'AB+', 'B-', 'O+', 'O-')) " +
+            "   OR (c.bloodType = 'B-' AND c.bloodType IN ('B-', 'O-')) " +
+            "   OR (c.bloodType = 'AB+' AND c.bloodType = 'AB+') " +
+            "   OR (c.bloodType = 'AB-' AND c.bloodType IN ('AB+', 'AB-')) " +
+            "   OR (c.bloodType = 'O+' AND c.bloodType IN ('A+', 'B+', 'O+', 'AB+')) " +
+            "   OR (c.bloodType = 'O-' AND c.bloodType IN ('A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-'))" +
+            ") " +
             "GROUP BY c.bloodType")
     List<Object[]> countDonorsByBloodType();
 }

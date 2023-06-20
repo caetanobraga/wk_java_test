@@ -8,4 +8,11 @@ public class DonorsByBloodTypeResponse {
         this.bloodType = bloodType;
         this.donorCount = donorCount;
     }
+
+    public String getBloodType() {
+        return bloodType;
+    }
+    public double getDonorCount() {
+        return donorCount;
+    }
 }
