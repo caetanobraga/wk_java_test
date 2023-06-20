@@ -33,4 +33,13 @@ e2e/*.map
 # System Files
 .DS_Store/
 
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+
 # End of https://www.toptal.com/developers/gitignore/api/angular
