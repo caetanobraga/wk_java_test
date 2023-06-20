@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import Chart from 'chart.js/auto';
+import { ChartTypeRegistry } from 'chart.js';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +14,17 @@ export class AppComponent {
   @ViewChild('canvas1', { static: true }) element1: ElementRef;
   @ViewChild('canvas2', { static: true }) element2: ElementRef;
   @ViewChild('canvas3', { static: true }) element3: ElementRef;
-
+  @ViewChild('canvas4', { static: true }) element4: ElementRef;
+  @ViewChild('canvas5', { static: true }) element5: ElementRef;
+  isLoading = false;
+  
 
   constructor(private http: HttpClient) {
     this.element1 = new ElementRef(null);
     this.element2 = new ElementRef(null);
     this.element3 = new ElementRef(null);
+    this.element4 = new ElementRef(null);
+    this.element5 = new ElementRef(null);
   }
 
   inputFileChange(event: any) {
@@ -28,6 +34,7 @@ export class AppComponent {
       formData.append('file', file);
 
       const apiUrl = 'http://localhost:8082/api/v1/candidates';
+      this.isLoading = true;
 
       this.http.post(apiUrl, formData)
       .subscribe(
@@ -36,6 +43,9 @@ export class AppComponent {
           this.getCandidatesByState();
           this.getImcByAgeGroup();
           this.getObesePercent();
+          this.getAgeMediaByBloodType();
+          this.getPossibleDonorsByBloodType();
+          this.isLoading = false;
         },
         error => {
           console.error('Erro ao enviar o arquivo', error);
@@ -83,14 +93,46 @@ export class AppComponent {
     });
   }
 
+  getAgeMediaByBloodType(){
+    const apiUrl = 'http://localhost:8082/api/v1/average-bloodtype';
+
+    this.http.get(apiUrl).subscribe({
+      next: (response: any) => {
+        this.processChartAgeMediaByBloodType(response);
+      },
+      error: error => {
+        console.error('Erro ao obter os dados da API', error);
+      }
+    });
+  }
+
+  getPossibleDonorsByBloodType(){
+    const apiUrl = 'http://localhost:8082/api/v1/donors-by-bloodtype';
+
+    this.http.get(apiUrl).subscribe({
+      next: (response: any) => {
+        this.processChartPossibleDonorsByBloodType(response);
+      },
+      error: error => {
+        console.error('Erro ao obter os dados da API', error);
+      }
+    });
+  }
+
+  chartCandidatesByStateData: Chart | null = null;
+
   processChartCandidatesByStateData(data: { state: string, candidatesNumber: number }[]){
 
     const labels: string[] = data.map( item => item.state);
 
     const values: number[] = data.map(item => item.candidatesNumber);
+    
+    if (this.chartCandidatesByStateData){
+      this.chartCandidatesByStateData.destroy();
+    }
 
-    const chartType = "bar";
-    new Chart(this.element1.nativeElement, {
+    const chartType: keyof ChartTypeRegistry = 'bar';
+    const config = {
       type: chartType,
       data: {
         labels: labels,
@@ -101,8 +143,11 @@ export class AppComponent {
           }
         ]
       },
-    });
+    }
+    this.chartCandidatesByStateData = new Chart(this.element1.nativeElement, config)
   }
+
+  chartImcByAgeGroup: Chart | null = null;
 
   processChartImcByAgeGroup(data: { ageGroup: number, imcMedia: number }[]){
 
@@ -110,11 +155,12 @@ export class AppComponent {
 
     const values: number[] = data.map(item => item.imcMedia);
 
-    console.log(labels);
-    console.log(values);
+    if (this.chartImcByAgeGroup){
+      this.chartImcByAgeGroup.destroy();
+    }
 
-    const chartType = "bar";
-    new Chart(this.element2.nativeElement, {
+    const chartType: keyof ChartTypeRegistry = 'bar';
+    const config = {
       type: chartType,
       data: {
         labels: labels,
@@ -125,27 +171,90 @@ export class AppComponent {
           }
         ]
       },
-    });
+    }
+    this.chartImcByAgeGroup = new Chart(this.element2.nativeElement, config);
   }
 
+  chartObesePercent: Chart | null = null;
+
   processChartObesePercent(data: { sex: string, percent: number }[]){
+  const labels: string[] = data.map(item => item.sex);
+  const values: number[] = data.map(item => item.percent);
 
-    const labels: string[] = data.map( item => item.sex);
+  if (this.chartObesePercent) {
+    this.chartObesePercent.destroy(); 
+  }
 
-    const values: number[] = data.map(item => item.percent);
+  const chartType: keyof ChartTypeRegistry = 'bar';
+  const config = {
+    type: chartType,
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Percentual de obesos entre gêneros',
+          data: values,
+        }
+      ]
+    },
+  };
 
-    const chartType = "bar";
-    new Chart(this.element3.nativeElement, {
+  this.chartObesePercent = new Chart(this.element3.nativeElement, config);
+  }
+
+  chartAgeMediaByBloodType: Chart | null = null;
+
+  processChartAgeMediaByBloodType(data: { bloodType: string, averageAge: number }[]){
+
+    const labels: string[] = data.map( item => item.bloodType);
+
+    const values: number[] = data.map(item => item.averageAge);
+
+    if (this.chartAgeMediaByBloodType){
+      this.chartAgeMediaByBloodType.destroy();
+    }
+
+    const chartType: keyof ChartTypeRegistry = 'bar';
+    const config = {
       type: chartType,
       data: {
         labels: labels,
         datasets:[
           {
-            label: "Percentual de obesos entre generos",
+            label: "Média de idade entre candidatos à doação",
             data: values,
           }
         ]
       },
-    });
+    }
+    this.chartAgeMediaByBloodType = new Chart(this.element4.nativeElement, config);
+  }
+
+  chartPossibleDonorsByBloodType: Chart | null = null;
+
+  processChartPossibleDonorsByBloodType(data: { bloodType: string, donorCount: number }[]){
+
+    const labels: string[] = data.map( item => item.bloodType);
+
+    const values: number[] = data.map(item => item.donorCount);
+
+    if (this.chartPossibleDonorsByBloodType){
+      this.chartPossibleDonorsByBloodType.destroy();
+    }
+
+    const chartType: keyof ChartTypeRegistry = 'bar';
+    const config =  {
+      type: chartType,
+      data: {
+        labels: labels,
+        datasets:[
+          {
+            label: "Possíveis doadores para cada tipo sangüíneo.",
+            data: values,
+          }
+        ]
+      },
+    }
+    this.chartPossibleDonorsByBloodType = new Chart(this.element5.nativeElement, config);
   }
 }
