@@ -50,3 +50,11 @@ Banco de dados MySql
 | `file`      | `Multipart Form` | **Obrigatório**. Arquivo formato json com os dados a serem inseridos |
 
 
+
+## Funcionalidades
+
+- Upload de arquivo
+- Gravação em Banco
+- Geração relatórios
+
+
